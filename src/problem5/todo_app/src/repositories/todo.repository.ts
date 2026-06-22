@@ -1,3 +1,4 @@
+import { Types } from 'mongoose';
 import { Todo, ITodo } from '../models/todo.model';
 
 export class TodoRepository {
@@ -5,8 +6,16 @@ export class TodoRepository {
     return Todo.create(payload);
   }
 
-  async findAll(filter = {}, skip = 0, limit = 50) {
-    return Todo.find(filter).skip(skip).limit(limit).exec();
+  async findAll(filter = {}, limit = 50, cursor?: string) {
+    const query = Todo.find(filter).sort({ _id: 1 });
+    if (cursor) {
+      query.find({ _id: { $gt: new Types.ObjectId(cursor) } });
+    }
+    return query.limit(limit).exec();
+  }
+
+  async count(filter = {}) {
+    return Todo.countDocuments(filter).exec();
   }
 
   async findById(id: string) {

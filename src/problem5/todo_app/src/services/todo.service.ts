@@ -1,18 +1,34 @@
 import { todoRepository } from '../repositories/todo.repository';
+import { UpdateTodo } from '../validators/todo.validator';
+
+const DEFAULT_PAGE = 1;
+const DEFAULT_LIMIT = 10;
+const MAX_LIMIT = 50;
+
+type TodoUpdatePayload = Omit<UpdateTodo, 'dueDate'> & { dueDate?: Date };
 
 export class TodoService {
   async create(data: { title: string; description?: string; dueDate?: Date }) {
     return todoRepository.create(data as any);
   }
 
-  async list(query: { completed?: boolean; title?: string; page?: number; limit?: number }) {
+  async list(query: { completed?: boolean; title?: string; cursor?: string; limit?: number }) {
     const filter: any = {};
     if (query.completed !== undefined) filter.completed = query.completed;
     if (query.title) filter.title = { $regex: query.title, $options: 'i' };
-    const page = query.page && query.page > 0 ? query.page : 1;
-    const limit = query.limit && query.limit > 0 ? query.limit : 50;
-    const skip = (page - 1) * limit;
-    return todoRepository.findAll(filter, skip, limit);
+
+    const limit = query.limit && query.limit > 0 ? Math.min(query.limit, MAX_LIMIT) : DEFAULT_LIMIT;
+    const items = await todoRepository.findAll(filter, limit, query.cursor);
+    const totalCount = await todoRepository.count(filter);
+    const totalPages = Math.max(1, Math.ceil(totalCount / limit));
+    const nextCursor = items.length ? items[items.length - 1]._id.toString() : undefined;
+
+    return {
+      items,
+      totalCount,
+      totalPages,
+      nextCursor,
+    };
   }
 
   async get(id: string) {
@@ -21,7 +37,7 @@ export class TodoService {
     return t;
   }
 
-  async update(id: string, payload: any) {
+  async update(id: string, payload: TodoUpdatePayload) {
     const t = await todoRepository.update(id, payload);
     if (!t) throw new Error('NotFound');
     return t;

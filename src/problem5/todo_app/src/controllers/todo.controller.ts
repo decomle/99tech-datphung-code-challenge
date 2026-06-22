@@ -10,14 +10,14 @@ export class TodoController {
   }
 
   async list(req: Request, res: Response) {
-    const { completed, title, page, limit } = req.query as any;
+    const { completed, title, cursor, limit } = req.query as any;
     const q: any = {};
     if (completed !== undefined) q.completed = completed === 'true' || completed === true;
     if (title) q.title = title;
-    if (page) q.page = Number(page);
+    if (cursor) q.cursor = cursor;
     if (limit) q.limit = Number(limit);
-    const items = await todoService.list(q);
-    res.json(items);
+    const results = await todoService.list(q);
+    res.json(results);
   }
 
   async get(req: Request, res: Response) {
@@ -29,7 +29,11 @@ export class TodoController {
   async update(req: Request, res: Response) {
     const id = req.params.id;
     const payload = req.body as UpdateTodo;
-    const todo = await todoService.update(id, payload);
+    const updateData = {
+      ...payload,
+      dueDate: payload.dueDate ? new Date(payload.dueDate) : undefined,
+    };
+    const todo = await todoService.update(id, updateData);
     res.json(todo);
   }
 
