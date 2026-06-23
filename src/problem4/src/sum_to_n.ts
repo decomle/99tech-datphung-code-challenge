@@ -4,7 +4,7 @@
  */
 
 /**
- * Sum numbers from 1 to n using an iterative loop.
+ * Sum numbers from 1 to n using an iterative reverse loop.
  *
  * Time complexity: O(n)
  * Space complexity: O(1)
@@ -23,12 +23,12 @@ export function sum_to_n_a(n: number): number {
   }
 
   let sum = 0;
-  for (let i = 1; i <= n; i++) {
-    sum += i;
-  }
-
-  if (sum > Number.MAX_SAFE_INTEGER) {
-    throw new RangeError('result exceeds Number.MAX_SAFE_INTEGER');
+  for (let i = n; i >= 1; i--) {
+    const next = sum + i;
+    if (next > Number.MAX_SAFE_INTEGER) {
+      throw new RangeError('result exceeds Number.MAX_SAFE_INTEGER');
+    }
+    sum = next;
   }
 
   return sum;
@@ -84,15 +84,13 @@ export function sum_to_n_c(n: number): number {
   }
 
   function helper(i: number, acc: number): number {
-    if (i > n) return acc;
-    return helper(i + 1, acc + i);
+    if (i < 1) return acc;
+    const next = acc + i;
+    if (next > Number.MAX_SAFE_INTEGER) {
+      throw new RangeError('result exceeds Number.MAX_SAFE_INTEGER');
+    }
+    return helper(i - 1, next);
   }
 
-  const sum = helper(1, 0);
-
-  if (sum > Number.MAX_SAFE_INTEGER) {
-    throw new RangeError('result exceeds Number.MAX_SAFE_INTEGER');
-  }
-
-  return sum;
+  return helper(n, 0);
 }

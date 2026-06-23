@@ -1,10 +1,18 @@
 # Problem 4 — Sum 1..n
 
-
 ## Introduction
 
 This folder is a self-contained project for Problem 4 
+
 - The 3 solutions are in the script `src/problem4/src/sum_to_n.ts`
+
+
+  - `sum_to_n_a`: Use an iterative to loop n to 1
+
+  - `sum_to_n_b`: Recommended. Use arithmetic series formula
+
+  - `sum_to_n_c`: Use recursion
+
 - The unit tests are created under `src/problem4/test/test_sum_to_n.ts`
 
 
@@ -30,4 +38,3 @@ npm install
 npm test
 ```
 
-The tests use `ts-node` in transpile-only mode with Node's native test runner, so the test file can import the `.ts` source directly.
