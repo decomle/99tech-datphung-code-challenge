@@ -48,9 +48,10 @@ The server will listen on the port configured in `.env` (default `3001`).
 
 ## How to use Postman collection to test the API
 
-1. Open Postman and import the collection file located at:
+1. Open Postman and import the collection, environment files located at:
 
 - `src/problem5/postman/todo_app.postman_collection.json`
+- `src/problem5/postman/todo_app.postman_environment.json`
 
 2. Ensure the collection variable `baseUrl` is set to the running server URL, e.g.:
 
